@@ -1399,7 +1399,7 @@ class WSGIApplication(object):
                     start_response('500 Internal Server Error', [])
                     return ['<html><body><h1>500 Internal Server Error</h1></body></html>']
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                fp = BytesIO()
+                fp = io.StringIO()
                 traceback.print_exception(exc_type, exc_value, exc_traceback, file=fp)
                 stacks = fp.getvalue()
                 fp.close()

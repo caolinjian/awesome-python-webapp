@@ -1,4 +1,4 @@
 awesome-python-webapp
 =====================
 
-A python webapp tutorial.
+A python3.3 webapp tutorial.

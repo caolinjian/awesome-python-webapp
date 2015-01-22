@@ -4,7 +4,7 @@
 Database operation module. This module is independent with web module.
 '''
 import time,logging
-import db
+from . import db
 
 class Field(object):
 

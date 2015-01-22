@@ -506,6 +506,7 @@ class StaticFileRoute(object):
         return _static_file_generator(fpath)
 
 def favicon_handler():
+    logging.info('509 %r' % static_file_handler)
     return static_file_handler('/favicon.ico')
 
 class MultipartFile(object):
@@ -1078,6 +1079,11 @@ class Response(object):
                 self._status = value
             else:
                 raise ValueError('Bad response code: %s' % value)
+        elif isinstance(value, bytes):
+            if _RE_RESPONSE_STATUS.match(value.decode('utf-8')):
+                self._status = value.decode('utf-8')
+            else:
+                raise ValueError('Bad response code: %s' % value)
         else:
             raise TypeError('Bad type of response code.')
 
@@ -1103,7 +1109,7 @@ class TemplateEngine(object):
     Base template engine.
     '''
     def __call__(self, path, model):
-        return '<!-- override this method to render template -->'
+        return 'b<!-- override this method to render template -->'
 
 class Jinja2TemplateEngine(TemplateEngine):
 
@@ -1134,12 +1140,12 @@ def _default_error_handler(e, start_response, is_debug):
         headers = e.headers[:]
         headers.append(('Content-Type', 'text/html'))
         start_response(e.status, headers)
-        return ('<html><body><h1>%s</h1></body></html>' % e.status)
+        return (b'<html><body><h1>%s</h1></body></html>' % e.status)
     logging.exception('Exception:')
-    start_response('500 Internal Server Error', [('Content-Type', 'text/html'), _HEADER_X_POWERED_BY])
+    start_response(b'500 Internal Server Error', [('Content-Type', 'text/html'), _HEADER_X_POWERED_BY])
     if is_debug:
         return _debug()
-    return ('<html><body><h1>500 Internal Server Error</h1><h3>%s</h3></body></html>' % str(e))
+    return (b'<html><body><h1>500 Internal Server Error</h1><h3>%s</h3></body></html>' % str(e))
 
 def view(path):
     '''
@@ -1165,7 +1171,6 @@ def view(path):
         def _wrapper(*args, **kw):
             r = func(*args, **kw)
             if isinstance(r, dict):
-                logging.info('return Template')
                 return Template(path, **r)
             raise ValueError('Expect return a dict when using @view() decorator.')
         return _wrapper
@@ -1348,7 +1353,6 @@ class WSGIApplication(object):
         self._running = True
 
         _application = Dict(document_root=self._document_root)
-
         def fn_route():
             request_method = ctx.request.request_method
             path_info = ctx.request.path_info
@@ -1380,8 +1384,10 @@ class WSGIApplication(object):
             response = ctx.response = Response()
             try:
                 r = fn_exec()
+                
                 if isinstance(r, Template):
                     r = self._template_engine(r.template_name, r.model)
+                    r = [r.encode('utf-8')]
                 if r is None:
                     r = []
                 start_response(response.status, response.headers)
@@ -1392,22 +1398,22 @@ class WSGIApplication(object):
                 return []
             except HttpError as e:
                 start_response(e.status, response.headers)
-                return ['<html><body><h1>', e.status, '</h1></body></html>']
+                return [b'<html><body><h1>', e.status.encode('utf-8'), b'</h1></body></html>']
             except Exception as e:
                 logging.exception(e)
                 if not debug:
                     start_response('500 Internal Server Error', [])
-                    return ['<html><body><h1>500 Internal Server Error</h1></body></html>']
+                    return [b'<html><body><h1>500 Internal Server Error</h1></body></html>']
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 fp = io.StringIO()
                 traceback.print_exception(exc_type, exc_value, exc_traceback, file=fp)
-                stacks = fp.getvalue()
+                stacks = fp.getvalue().encode('utf-8')
                 fp.close()
                 start_response('500 Internal Server Error', [])
                 return [
-                    r'''<html><body><h1>500 Internal Server Error</h1><div style="font-family:Monaco, Menlo, Consolas, 'Courier New', monospace;"><pre>''',
+                    br'''<html><body><h1>500 Internal Server Error</h1><div style="font-family:Monaco, Menlo, Consolas, 'Courier New', monospace;"><pre>''',
                     stacks.replace('<', '&lt;').replace('>', '&gt;'),
-                    '</pre></div></body></html>']
+                    'b</pre></div></body></html>']
             finally:
                 del ctx.application
                 del ctx.request

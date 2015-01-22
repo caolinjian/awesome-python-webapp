@@ -1,11 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-'''
-Configuration
-'''
-
-__author__ = 'Michael Liao'
 
 import config_default
 
@@ -29,7 +23,7 @@ class Dict(dict):
 
 def merge(defaults, override):
     r = {}
-    for k, v in defaults.iteritems():
+    for k, v in defaults.items():
         if k in override:
             if isinstance(v, dict):
                 r[k] = merge(v, override[k])
@@ -41,7 +35,7 @@ def merge(defaults, override):
 
 def toDict(d):
     D = Dict()
-    for k, v in d.iteritems():
+    for k, v in d.items():
         D[k] = toDict(v) if isinstance(v, dict) else v
     return D
 

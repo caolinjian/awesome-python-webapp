@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ = 'Michael Liao'
-
 import os, sys, time, subprocess
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 def log(s):
-    print '[Monitor] %s' % s
+    print('[Monitor] %s' % s)
 
 class MyFileSystemEventHander(FileSystemEventHandler):
 

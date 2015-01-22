@@ -69,14 +69,17 @@ class DBError(Exception):
 
 class MultiColumnsError(DBError):
     pass
+
+engine = None
     
 class _LasyConnection(object):
-
     def __init__(self):
         self.connection = None
 
     def cursor(self):
+        global engine
         if self.connection is None:
+            logging.info('engine <%s> ?????.' % hex(id(engine)))
             connection = engine.connect()
             logging.info('open connection <%s>...' % hex(id(connection)))
             self.connection = connection
@@ -121,8 +124,6 @@ class _DbCtx(threading.local):
         
 _db_ctx = _DbCtx()
 
-engine = None
-
 class _Engine(object):
 
     def __init__(self,connect):
@@ -137,7 +138,7 @@ def create_engine(user, password, database, host='127.0.0.1', port=3306, **kw):
     if engine is not None:
         raise DBError('Engine is already initialized.')
     params = dict(user=user, password=password, database=database, host=host, port=port)
-    defaults = dict(use_unicode=True, charset='utf8', collation='utf8_general_ci', autocommit=False)
+    defaults = dict(use_unicode=True, charset='utf8', collation='utf8_general_ci', autocommit=True)
     for k, v in defaults.items():
         params[k] = kw.pop(k, v)
     params.update(kw)

@@ -1,21 +1,12 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-__author__ = 'Michael Liao'
-
-'''
-Default configurations.
-'''
-
-configs = {
-    'db': {
+﻿configs= {
+    'db':{
         'host': '127.0.0.1',
         'port': 3306,
-        'user': 'www-data',
-        'password': 'www-data',
-        'database': 'awesome'
+        'user':'root',
+        'password':'123456',
+        'database':'awesome'
     },
-    'session': {
-        'secret': 'AwEsOmE'
+    'session':{
+        'secret':'AwEsOmE'
     }
 }

@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-__author__ = 'Michael Liao'
-
 '''
 JSON API definition.
 '''
@@ -10,7 +6,6 @@ JSON API definition.
 import re, json, logging, functools
 
 from transwarp.web import ctx
-
 class Page(object):
     '''
     Page object for display pages.
@@ -71,11 +66,11 @@ def _dump(obj):
             'has_previous': obj.has_previous
         }
     raise TypeError('%s is not JSON serializable' % obj)
-
+    
 def dumps(obj):
-    return json.dumps(obj, default=_dump)
+    return json.dumps(obj, default=_dump).encode('utf-8')
 
-class APIError(StandardError):
+class APIError(BaseException):
     '''
     the base APIError which contains error(required), data(optional) and message(optional).
     '''
@@ -119,13 +114,14 @@ def api(func):
     def _wrapper(*args, **kw):
         try:
             r = dumps(func(*args, **kw))
-        except APIError, e:
-            r = json.dumps(dict(error=e.error, data=e.data, message=e.message))
-        except Exception, e:
+            
+        except APIError as e:
+            r = dumps(dict(error=e.error, data=e.data, message=e.message))
+        except Exception as e:
             logging.exception(e)
-            r = json.dumps(dict(error='internalerror', data=e.__class__.__name__, message=e.message))
+            r = dumps(dict(error='internalerror', data=e.__class__.__name__, message=e.message))
         ctx.response.content_type = 'application/json'
-        return r
+        return [r]
     return _wrapper
 
 if __name__=='__main__':

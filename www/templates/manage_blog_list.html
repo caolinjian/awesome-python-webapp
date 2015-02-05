@@ -1,8 +1,86 @@
-{% extends '__base__.html' %}
+{% extends '__base__1.html' %}
 
 {% block title %}日志{% endblock %}
-
 {% block beforehead %}
+<style>
+    #circle {   
+        background-color: rgba(0,0,0,0);   
+        border:5px solid rgba(0,183,229,0.9);   
+        opacity:.9;   
+        border-right:5px solid rgba(0,0,0,0);   
+        border-left:5px solid rgba(0,0,0,0);   
+        border-radius:50px;   
+        box-shadow: 0 0 35px #808080;   
+        width:50px;   
+        height:50px;   
+            margin:0 auto;          
+        position:fixed;   
+            left:30px;   
+            bottom:200px;   
+        -moz-animation:spinPulse 1s infinite ease-in-out;   
+        -webkit-animation:spinPulse 1s infinite ease-in-out;   
+        -o-animation:spinPulse 1s infinite ease-in-out;   
+        -ms-animation:spinPulse 1s infinite ease-in-out;   
+      
+    }   
+    #circle1 {   
+        background-color: rgba(0,0,0,0);   
+        border:5px solid rgba(0,183,229,0.9);   
+        opacity:.9;   
+        border-left:5px solid rgba(0,0,0,0);   
+        border-right:5px solid rgba(0,0,0,0);   
+        border-radius:50px;   
+        box-shadow: 0 0 15px #202020;    
+        width:30px;   
+        height:30px;   
+            margin:0 auto;   
+            position:fixed;   
+            left:40px;   
+            bottom:210px;   
+        -moz-animation:spinoffPulse 1s infinite linear;   
+        -webkit-animation:spinoffPulse 1s infinite linear;   
+        -o-animation:spinoffPulse 1s infinite linear;   
+        -ms-animation:spinoffPulse 1s infinite linear;   
+    }   
+    @-moz-keyframes spinPulse {   
+        0% { -moz-transform:rotate(160deg); opacity:0; box-shadow:0 0 1px #2187e7;}   
+        50% { -moz-transform:rotate(145deg); opacity:1; }   
+        100% { -moz-transform:rotate(-320deg); opacity:0; }   
+    }   
+    @-moz-keyframes spinoffPulse {   
+        0% { -moz-transform:rotate(0deg); }   
+        100% { -moz-transform:rotate(360deg);  }   
+    }   
+    @-webkit-keyframes spinPulse {   
+        0% { -webkit-transform:rotate(160deg); opacity:0; box-shadow:0 0 1px #2187e7; }   
+        50% { -webkit-transform:rotate(145deg); opacity:1;}   
+        100% { -webkit-transform:rotate(-320deg); opacity:0; }   
+    }   
+    @-webkit-keyframes spinoffPulse {   
+        0% { -webkit-transform:rotate(0deg); }   
+        100% { -webkit-transform:rotate(360deg); }   
+    }   
+    @-o-keyframes spinPulse {   
+        0% { -o-transform:rotate(160deg); opacity:0; box-shadow:0 0 1px #2187e7; }   
+        50% { -o-transform:rotate(145deg); opacity:1;}   
+        100% { -o-transform:rotate(-320deg); opacity:0; }   
+    }   
+    @-o-keyframes spinoffPulse {   
+        0% { -o-transform:rotate(0deg); }   
+        100% { -o-transform:rotate(360deg); }   
+    }   
+    @-ms-keyframes spinPulse {   
+        0% { -ms-transform:rotate(160deg); opacity:0; box-shadow:0 0 1px #2187e7; }   
+        50% { -ms-transform:rotate(145deg); opacity:1;}   
+        100% { -ms-transform:rotate(-320deg); opacity:0; }   
+    }   
+    @-ms-keyframes spinoffPulse {   
+        0% { -ms-transform:rotate(0deg); }   
+        100% { -ms-transform:rotate(360deg); }   
+    }  
+</style>
+{% endblock %}
+{% block afterbody %}
 
 <script>
 
@@ -54,30 +132,25 @@ $(function() {
 
 {% block content %}
 
-    <div class="uk-width-1-1 uk-margin-bottom">
-        <div class="uk-panel uk-panel-box">
-            <ul class="uk-breadcrumb">
-                <li><a href="/manage/comments">评论</a></li>
-                <li class="uk-active"><span>日志</span></li>
-                <li><a href="/manage/users">用户</a></li>
-            </ul>
-        </div>
-    </div>
+    <nav class="navbar-btn">
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">日志</a></li>
+        <li role="presentation"><a href="/manage/comments">评论</a></li>
+        <li role="presentation"><a href="/manage/users">用户</a></li>
+      </ul>
+    </nav>
+    <div style='display:none;' class="alert alert-danger" role="alert"></div>
 
-    <div class="uk-width-1-1 uk-margin-bottom">
-        <div class="uk-alert uk-alert-danger uk-hidden"></div>
-    </div>
+    <div id="div-blogs" style="display:none;word-break:break-all;">
+        <a href="/manage/blogs/create" class="btn btn-primary"><i class="fa fa-plus"></i> 新日志</a>
 
-    <div id="div-blogs" class="uk-width-1-1" style="display:none">
-        <a href="/manage/blogs/create" class="uk-button uk-button-primary"><i class="uk-icon-plus"></i> 新日志</a>
-
-        <table class="uk-table uk-table-hover">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th class="uk-width-5-10">标题 / 摘要</th>
-                    <th class="uk-width-2-10">作者</th>
-                    <th class="uk-width-2-10">创建时间</th>
-                    <th class="uk-width-1-10">操作</th>
+                    <th>标题</th>
+                    <th>作者</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -92,24 +165,23 @@ $(function() {
                         <span v-text="blog.created_at.toDateTime()"></span>
                     </td>
                     <td>
-                        <a href="#0" v-on="click: edit_blog(blog)"><i class="uk-icon-edit"></i>
-                        <a href="#0" v-on="click: delete_blog(blog)"><i class="uk-icon-trash-o"></i>
+                        <a href="#0" v-on="click: edit_blog(blog)"><i class="fa fa-edit"></i>
+                        <a href="#0" v-on="click: delete_blog(blog)"><i class="fa fa-trash-o"></i>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="uk-width-1-1 uk-text-center">
-            <ul class="uk-pagination">
-                <li v-if="! page.has_previous" class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
-                <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="uk-icon-angle-double-left"></i></a></li>
-                <li class="uk-active"><span v-text="page.page_index"></span></li>
-                <li v-if="! page.has_next" class="uk-disabled"><span><i class="uk-icon-angle-double-right"></i></span></li>
-                <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="uk-icon-angle-double-right"></i></a></li>
-            </ul>
-        </div>
+        <ul class="pagination">
+            <li v-if="! page.has_previous" disabled="disabled"><span><i class="fa fa-angle-double-left"></i></span></li>
+            <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="fa fa-angle-double-left"></i></a></li>
+            <li><span v-text="page.page_index"></span></li>
+            <li v-if="! page.has_next" disabled="disabled"><span><i class="fa fa-angle-double-right"></i></span></li>
+            <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="fa fa-angle-double-right"></i></a></li>
+        </ul>
     </div>
 
-    <div id="div-loading" class="uk-width-1-1 uk-text-center">
-        <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
+    <div id="div-loading">
+      <div id="circle"></div>
+      <div id="circle1"></div>
     </div>
 {% endblock %}

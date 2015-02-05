@@ -1,8 +1,8 @@
-{% extends '__base__.html' %}
+{% extends '__base__1.html' %}
 
 {% block title %}注册{% endblock %}
 
-{% block beforehead %}
+{% block afterbody %}
 
 <script>
 
@@ -35,7 +35,7 @@ $(function () {
                 if (this.password1 !== this.password2) {
                     return showError('两次输入的口令不一致');
                 }
-                startLoading();
+                var $btn = $("[type='submit']").button('loading');
                 postApi('/api/users', {
                     name: this.name,
                     email: this.email.trim().toLowerCase(),
@@ -47,7 +47,7 @@ $(function () {
                     else {
                         return location.assign('/');
                     }
-                    stopLoading();
+                    $btn.button('reset');
                 });
             }
         }
@@ -59,39 +59,43 @@ $(function () {
 {% endblock %}
 
 {% block content %}
-
-    <div class="uk-width-2-3">
-        <h1>欢迎注册！</h1>
-        <form id="form-register" v-on="submit: submit" class="uk-form uk-form-stacked">
-            <div class="uk-alert uk-alert-danger uk-hidden"></div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">名字:</label>
-                <div class="uk-form-controls">
-                    <input v-model="name" type="text" maxlength="50" placeholder="名字" class="uk-width-1-1">
-                </div>
+  <div class="row">
+    <div class="col-xs-12 col-md-9">
+        <div class="page-header">
+          <h1>欢迎注册<small>Welcome to register</small></h1>
+        </div>
+        <form id="form-register" class="form-horizontal" v-on="submit: submit">
+          <div style='display:none;' class="alert alert-danger" role="alert"></div>
+          <div class="form-group">
+            <label for="inputName" class="col-sm-2 control-label">昵称</label>
+            <div class="col-sm-10">
+              <input v-model="name" type="text" maxlength="50" class="form-control" id="inputName" placeholder="昵称" required autofocus>
             </div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">电子邮件:</label>
-                <div class="uk-form-controls">
-                    <input v-model="email" type="text" maxlength="50" placeholder="your-name@example.com" class="uk-width-1-1">
-                </div>
+          </div>
+          <div class="form-group">
+            <label for="inputEmail" class="col-sm-2 control-label">电子邮件</label>
+            <div class="col-sm-10">
+              <input v-model="email" type="email" maxlength="50" class="form-control" id="inputEmail" placeholder="your-name@example.com" required>
             </div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">输入口令:</label>
-                <div class="uk-form-controls">
-                    <input v-model="password1" type="password" maxlength="50" placeholder="输入口令" class="uk-width-1-1">
-                </div>
+          </div>
+          <div class="form-group">
+            <label for="inputPassword1" class="col-sm-2 control-label">输入密码</label>
+            <div class="col-sm-10">
+              <input v-model="password1" type="password" maxlength="50" class="form-control" id="inputPassword1" placeholder="输入密码" required>
             </div>
-            <div class="uk-form-row">
-                <label class="uk-form-label">重复口令:</label>
-                <div class="uk-form-controls">
-                    <input v-model="password2" type="password" maxlength="50" placeholder="重复口令" class="uk-width-1-1">
-                </div>
+          </div>
+          <div class="form-group">
+            <label for="inputPassword2" class="col-sm-2 control-label">重复密码</label>
+            <div class="col-sm-10">
+              <input v-model="password2" type="password" maxlength="50" class="form-control" id="inputPassword2" placeholder="重复密码" required>
             </div>
-            <div class="uk-form-row">
-                <button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-user"></i> 注册</button>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-primary" data-loading-text="注册ing...">注册</button>
             </div>
+          </div>
         </form>
     </div>
-
+  </div>
 {% endblock %}

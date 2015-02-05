@@ -1,8 +1,8 @@
-{% extends '__base__.html' %}
+{% extends '__base__1.html' %}
 
 {% block title %}用户{% endblock %}
 
-{% block beforehead %}
+{% block afterbody %}
 
 <script>
 
@@ -41,34 +41,29 @@ $(function() {
 
 {% block content %}
 
-    <div class="uk-width-1-1 uk-margin-bottom">
-        <div class="uk-panel uk-panel-box">
-            <ul class="uk-breadcrumb">
-                <li><a href="/manage/comments">评论</a></li>
-                <li><a href="/manage/blogs">日志</a></li>
-                <li class="uk-active"><span>用户</span></li>
-            </ul>
-        </div>
-    </div>
+    <nav class="navbar-btn">
+      <ul class="nav nav-tabs">
+        <li role="presentation"><a href="/manage/blogs">日志</a></li>
+        <li role="presentation"><a href="/manage/comments">评论</a></li>
+        <li role="presentation" class="active"><a href="#">用户</a></li>
+      </ul>
+    </nav>
+    <div style='display:none;' class="alert alert-danger" role="alert"></div>
 
-    <div class="uk-width-1-1">
-        <div class="uk-alert uk-alert-danger uk-hidden"></div>
-    </div>
-
-    <div id="div-users" class="uk-width-1-1" style="display:none">
-        <table class="uk-table uk-table-hover">
+    <div id="div-users" style="display:none">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th class="uk-width-4-10">名字</th>
-                    <th class="uk-width-4-10">电子邮件</th>
-                    <th class="uk-width-2-10">注册时间</th>
+                    <th>昵称</th>
+                    <th>电子邮件</th>
+                    <th>注册时间</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-repeat="user: users" >
                     <td>
                         <span v-text="user.name"></span>
-                        <span v-if="user.admin" style="color:#d05"><i class="uk-icon-key"></i> 管理员</span>
+                        <span v-if="user.admin" style="color:#d05"><i class="fa fa-key"></i> 管理员</span>
                     </td>
                     <td>
                         <a v-attr="href: 'mailto:'+user.email" v-text="user.email"></a>
@@ -79,15 +74,13 @@ $(function() {
                 </tr>
             </tbody>
         </table>
-        <div class="uk-width-1-1 uk-text-center">
-            <ul class="uk-pagination">
-                <li v-if="! page.has_previous" class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
-                <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="uk-icon-angle-double-left"></i></a></li>
-                <li class="uk-active"><span v-text="page.page_index"></span></li>
-                <li v-if="! page.has_next" class="uk-disabled"><span><i class="uk-icon-angle-double-right"></i></span></li>
-                <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="uk-icon-angle-double-right"></i></a></li>
-            </ul>
-        </div>
+        <ul class="pagination">
+            <li v-if="! page.has_previous" disabled="disabled"><span><i class="fa fa-angle-double-left"></i></span></li>
+            <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="fa fa-angle-double-left"></i></a></li>
+            <li><span v-text="page.page_index"></span></li>
+            <li v-if="! page.has_next" disabled="disabled"><span><i class="fa fa-angle-double-right"></i></span></li>
+            <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="fa fa-angle-double-right"></i></a></li>
+        </ul>
     </div>
 
     <div id="div-loading" class="uk-width-1-1 uk-text-center">

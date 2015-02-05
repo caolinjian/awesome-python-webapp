@@ -1,9 +1,9 @@
 // awesome.js
 
 function showError(err) {
-    var alert = $('div.alert-danger');
+    var alert = $('div.uk-alert-danger');
     if (err) {
-        alert.text(err.message || err.error || err).show();
+        alert.text(err.message || err.error || err).removeClass('uk-hidden').show();
         try {
             if (alert.offset().top < ($(window).scrollTop() - 41)) {
                 $('html,body').animate({scrollTop: alert.offset().top - 41});
@@ -12,7 +12,7 @@ function showError(err) {
         catch (e) {}
     }
     else {
-        alert.hide().text('');
+        alert.addClass('uk-hidden').hide().text('');
     }
 }
 
@@ -48,6 +48,19 @@ function postApi(url, data, callback) {
     _ajax('POST', url, data, callback);
 }
 
+function startLoading() {
+    var btn = $('form').find('button[type=submit]');
+    var icon = btn.find('i');
+    icon.addClass('uk-icon-spinner').addClass('uk-icon-spin');
+    btn.attr('disabled', 'disabled');
+}
+
+function stopLoading() {
+    var btn = $('form').find('button[type=submit]');
+    var icon = btn.find('i');
+    icon.removeClass('uk-icon-spin').removeClass('uk-icon-spinner');
+    btn.removeAttr('disabled');
+}
 
 // add to prototype:
 
@@ -138,38 +151,39 @@ function gotoPage(index) {
 }
 
 function showConfirm(title, text, fn_ok, fn_cancel) {
-    var s = '<div class="modal fade" id="div-confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'+
-              '<div class="modal-dialog modal-sm">'+
-                '<div class="modal-content">'+
-                  '<div class="modal-header">'+
-                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
-                    '<h4 class="modal-title x-title" id="myModalLabel"></h4>'+
-                  '</div>'+
-                  '<div class="modal-body x-text"></div>'+
-                  '<div class="modal-footer">'+
-                    '<button type="button" class="btn btn-primary x-ok"><i class="fa fa-check"></i> 是</button>'+
-                    '<button type="button" class="btn btn-default x-cancel" data-dismiss="modal"><i class="fa fa-times"></i> 否</button>'+
-                  '</div>'+
-                '</div>'+
-              '</div>'+
-            '</div>'
+    var s = '<div id="div-confirm" class="uk-modal">' +
+            '<div class="uk-modal-dialog">' +
+            '<a href="#0" class="uk-modal-close uk-close"></a>' +
+            '<h1 class="x-title"></h1>' +
+            '<p class="x-text"></p>' +
+            '<hr><p class="uk-text-center">' +
+            '<button class="uk-button uk-button-primary x-ok"><i class="uk-icon-check"></i> 是</button>' +
+            '&nbsp;&nbsp;&nbsp;' +
+            '<button class="uk-button x-cancel"><i class="uk-icon-times"></i> 否</button>' +
+            '</p></div></div>';
     $('body').append(s);
     var m = $('#div-confirm');
+    var modal = new $.UIkit.modal.Modal('#div-confirm');
     m.find('.x-title').text(title);
     m.find('.x-text').text(text);
     m.find('.x-ok').click(function () {
-        m.modal('hide');
+        modal.hide();
         fn_ok && fn_ok();
     });
     m.find('.x-cancel').click(function () {
-        m.modal('hide');
+        modal.hide();
         fn_cancel && fn_cancel();
     });
     m.on({
-        'hidden.bs.modal': function() {
+        'uk.modal.hide': function() {
             $('#div-confirm').remove();
         }
     });
-    m.modal('show');
+    modal.show();
 }
 
+$(function() {
+    if (location.pathname === '/' || location.pathname.indexOf('/blog')===0) {
+        $('li[data-url=blogs]').addClass('uk-active');
+    }
+});

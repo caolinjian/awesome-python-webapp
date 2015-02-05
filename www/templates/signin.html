@@ -1,82 +1,115 @@
 <!DOCTYPE html>
-<html class="uk-height-1-1">
-<head>
-    <meta charset="utf-8" />
-    <title>登录 - Awesome Python Webapp</title>
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <link rel="stylesheet" href="/static/css/uikit.min.css">
-    <link rel="stylesheet" href="/static/css/uikit.gradient.min.css">
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/md5.js"></script>
-    <script src="/static/js/uikit.min.js"></script>
-    <script src="/static/js/vue.min.js"></script>
+<html lang="zh-cn">
+
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>登录 - Awesome Python Webapp</title>
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+		<!-- Bootstrap -->
+		<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+	      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+		<style>
+			form {
+				background: #f5f5f5;
+				padding: 15px;
+			}
+			.loginBox {
+				width: 100%;
+				max-width: 300px;
+				height: 230px;
+				border: 1px solid #fff;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -150px;
+				margin-top: -120px;
+			}
+			@media only screen and (max-width: 300px) {
+				.loginBox {
+					left: 0px;
+					margin-left: 0px;
+				}
+			}
+      .alert {
+        padding: 10px;
+      }
+      a:hover, a:active {
+        text-decoration: none;
+      }
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="loginBox">
+				<h4 style="text-align: center">
+					<i class="fa fa-html5 fw"></i>
+					<a href="/"> Awesome python app</a>
+				</h4>
+				<form id="form-signin" v-on="submit: submit">
+          <div style='display:none;' class="alert alert-danger" role="alert"></div>
+					<label for="inputEmail" class="sr-only">Email address</label>
+					<input type="email" v-model="email" id="email" class="form-control" placeholder="Email address" required autofocus>
+
+					<br>
+					<label for="inputPassword" class="sr-only">Password</label>
+					<input type="password" v-model="password" id="password" class="form-control" placeholder="Password" required>
+
+					<div class="checkbox" style="float: left;">
+						<label>
+							<input type="checkbox" v-model="remember"> Remember me
+						</label>
+					</div>
+					<button type="submit" class="btn btn-lg btn-primary btn-block" data-loading-text="Loading..." autocomplete="off">Sign in</button>
+				</form>
+			</div>
+		</div>
+		<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/static/js/md5.js"></script>
+		<script src="/static/js/vue.min.js"></script>
     <script src="/static/js/awesome.js"></script>
-    <script>
+		<script>
+			$(function() {
+			    var vm = new Vue({
+			        el: '#form-signin',
+			        data: {
+			            email: '',
+			            password: '',
+			            remember: false
+			        },
+			        methods: {
+			            submit: function (event) {
+			                event.preventDefault();
+			                var email = this.email.trim().toLowerCase();
+			                showError();
+                      var $btn = $("[type='submit']").button('loading');
+			                postApi('/api/authenticate', {
+			                    email: email,
+			                    password: CryptoJS.MD5(this.password).toString(),
+			                    remember: this.remember
+			                }, function (err, result) {
+			                    if (err) {
+			                        showError(err);
+			                    }
+			                    else {
+			                        return location.assign(result.admin ? '/manage/' : '/');
+			                    }
+                          $btn.button('reset');
+			                });
+			            }
+			        }
+			    });
+			})
+		</script>
+	</body>
 
-$(function() {
-    var vm = new Vue({
-        el: '#form-signin',
-        data: {
-            email: '',
-            password: '',
-            remember: false
-        },
-        methods: {
-            submit: function (event) {
-                event.preventDefault();
-                var email = this.email.trim().toLowerCase();
-                showError();
-                startLoading();
-                postApi('/api/authenticate', {
-                    email: email,
-                    password: CryptoJS.MD5(this.password).toString(),
-                    remember: this.remember
-                }, function (err, result) {
-                    if (err) {
-                        showError(err);
-                    }
-                    else {
-                        return location.assign(result.admin ? '/manage/' : '/');
-                    }
-                    stopLoading();
-                });
-            }
-        }
-    });
-})
-
-    </script>
-</head>
-<body class="uk-height-1-1">
-    <div class="uk-vertical-align uk-text-center uk-height-1-1">
-        <div class="uk-vertical-align-middle" style="width: 320px">
-            <p><a href="/" class="uk-icon-button"><i class="uk-icon-html5"></i></a> <a href="/">Awesome Python Webapp</a></p>
-
-            <form id="form-signin" v-on="submit: submit" class="uk-panel uk-panel-box uk-form">
-                <div class="uk-alert uk-alert-danger uk-hidden"></div>
-                <div class="uk-form-row">
-                    <div class="uk-form-icon uk-width-1-1">
-                        <i class="uk-icon-envelope-o"></i>
-                        <input v-model="email" name="email" type="text" placeholder="电子邮件" maxlength="50" class="uk-width-1-1 uk-form-large">
-                    </div>
-                </div>
-                <div class="uk-form-row">
-                    <div class="uk-form-icon uk-width-1-1">
-                        <i class="uk-icon-lock"></i>
-                        <input v-model="password" name="password" type="password" placeholder="口令" maxlength="50" class="uk-width-1-1 uk-form-large">
-                    </div>
-                </div>
-                <div class="uk-form-row">
-                    <button type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
-                </div>
-                <div class="uk-form-row uk-text-small">
-                    <label class="uk-float-left"><input v-model="remember" type="checkbox"> 记住我</label>
-                </div>
-            </form>
-        </div>
-    </div>
-</body>
 </html>

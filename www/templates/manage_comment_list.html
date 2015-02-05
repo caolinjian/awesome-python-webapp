@@ -1,8 +1,63 @@
-{% extends '__base__.html' %}
+{% extends '__base__1.html' %}
 
 {% block title %}评论{% endblock %}
-
 {% block beforehead %}
+<style>
+  .spinner {
+    margin: 100px auto;
+    width: 250px;
+    height: 150px;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .spinner > div {
+    background-color: #1289ab;
+    height: 100%;
+    width: 30px;
+    display: inline-block;
+    
+    -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+    animation: stretchdelay 1.2s infinite ease-in-out;
+  }
+
+  .spinner .rect2 {
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
+  }
+
+  .spinner .rect3 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+  }
+
+  .spinner .rect4 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+  }
+
+  .spinner .rect5 {
+    -webkit-animation-delay: -0.8s;
+    animation-delay: -0.8s;
+  }
+
+  @-webkit-keyframes stretchdelay {
+    0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+    20% { -webkit-transform: scaleY(1.0) }
+  }
+
+  @keyframes stretchdelay {
+    0%, 40%, 100% { 
+      transform: scaleY(0.4);
+      -webkit-transform: scaleY(0.4);
+    } 20% {
+      transform: scaleY(1.0);
+      -webkit-transform: scaleY(1.0);
+    }
+  }
+</style>
+{% endblock %}
+{% block afterbody %}
 
 <script>
 
@@ -51,29 +106,22 @@ $(function() {
 {% endblock %}
 
 {% block content %}
-
-    <div class="uk-width-1-1 uk-margin-bottom">
-        <div class="uk-panel uk-panel-box">
-            <ul class="uk-breadcrumb">
-                <li class="uk-active"><span>评论</span></li>
-                <li><a href="/manage/blogs">日志</a></li>
-                <li><a href="/manage/users">用户</a></li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="uk-width-1-1">
-        <div class="uk-alert uk-alert-danger uk-hidden"></div>
-    </div>
-
-    <div id="div-comments" class="uk-width-1-1" style="display:none">
-        <table class="uk-table uk-table-hover">
+    <nav class="navbar-btn">
+      <ul class="nav nav-tabs">
+        <li role="presentation"><a href="/manage/blogs">日志</a></li>
+        <li role="presentation" class="active"><a href="#">评论</a></li>
+        <li role="presentation"><a href="/manage/users">用户</a></li>
+      </ul>
+    </nav>
+    <div style='display:none;' class="alert alert-danger" role="alert"></div>
+    <div id="div-comments" style="display:none;word-break:break-all;">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th class="uk-width-2-10">作者</th>
-                    <th class="uk-width-5-10">内容</th>
-                    <th class="uk-width-2-10">创建时间</th>
-                    <th class="uk-width-1-10">操作</th>
+                    <th>作者</th>
+                    <th>内容</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,23 +136,27 @@ $(function() {
                         <span v-text="comment.created_at.toDateTime()"></span>
                     </td>
                     <td>
-                        <a href="#0" v-on="click: delete_comment(comment)"><i class="uk-icon-trash-o"></i>
+                        <a href="#0" v-on="click: delete_comment(comment)"><i class="fa fa-trash-o"></i>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="uk-width-1-1 uk-text-center">
-            <ul class="uk-pagination">
-                <li v-if="! page.has_previous" class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
-                <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="uk-icon-angle-double-left"></i></a></li>
-                <li class="uk-active"><span v-text="page.page_index"></span></li>
-                <li v-if="! page.has_next" class="uk-disabled"><span><i class="uk-icon-angle-double-right"></i></span></li>
-                <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="uk-icon-angle-double-right"></i></a></li>
-            </ul>
-        </div>
+        <ul class="pagination">
+            <li v-if="! page.has_previous" disabled="disabled"><span><i class="fa fa-angle-double-left"></i></span></li>
+            <li v-if="page.has_previous"><a v-on="click: previous()" href="#0"><i class="fa fa-angle-double-left"></i></a></li>
+            <li><span v-text="page.page_index"></span></li>
+            <li v-if="! page.has_next" disabled="disabled"><span><i class="fa fa-angle-double-right"></i></span></li>
+            <li v-if="page.has_next"><a v-on="click: next()" href="#0"><i class="fa fa-angle-double-right"></i></a></li>
+        </ul>
     </div>
 
     <div id="div-loading" class="uk-width-1-1 uk-text-center">
-        <span><i class="uk-icon-spinner uk-icon-medium uk-icon-spin"></i> 正在加载...</span>
+      <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+      </div>
     </div>
 {% endblock %}

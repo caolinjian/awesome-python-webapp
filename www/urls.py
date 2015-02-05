@@ -87,7 +87,7 @@ def blog(blog_id):
     blog = Blog.get(blog_id)
     if blog is None:
         raise notfound()
-    blog.html_content = markdown2.markdown(blog.content)
+    blog.html_content = markdown2.markdown(blog.content,extras=["code-friendly","fenced-code-blocks"])
     comments = Comment.find_by('where blog_id=? order by created_at desc limit 1000', blog_id)
     return dict(blog=blog, comments=comments, user=ctx.request.user)
 
@@ -136,7 +136,7 @@ def signout():
     
 @get('/manage/')
 def manage_index():
-    raise seeother('/manage/comments')
+    raise seeother('/manage/blogs')
     
 @api
 @post('/api/users')
@@ -163,10 +163,12 @@ def register_user():
 @api
 @get('/api/users')
 def api_get_users():
-    users = User.find_by('order by created_at desc')
+    total = User.count_all()
+    page = Page(total, _get_page_index())
+    users = User.find_by('order by created_at desc limit ?,?', page.offset, page.limit)
     for u in users:
         u.password = '******'
-    return dict(users=users)
+    return dict(users=users, page=page)
     
 @api
 @post('/api/authenticate')
@@ -175,7 +177,6 @@ def authenticate():
     email = i.email.strip().lower()
     password = i.password
     remember = i.remember
-    logging.info('121-------%r' % email)
     user = User.find_first('where email=?', email)
     if user is None:
         raise APIError('auth:failed', 'email', 'Invalid email.')
@@ -203,7 +204,7 @@ def api_create_blog():
     if not content:
         raise APIValueError('content', 'content cannot be empty.')
     user = ctx.request.user
-    blog = Blog(user_id=user.id, user_name=user.name, name=name, summary=summary, content=content)
+    blog = Blog(user_id=user.id, user_name=user.name,user_image=user.image, name=name, summary=summary, content=content)
     blog.insert()
     return blog
     
@@ -234,10 +235,10 @@ def api_update_blog(blog_id):
 @get('/api/blogs')
 def api_get_blogs():
     format = ctx.request.get('format', '')
-    blogs, page = _get_blogs_by_page()
+    blogs, page = _get_blogs_by_page() 
     if format=='html':
         for blog in blogs:
-            blog.content = markdown2.markdown(blog.content)
+            blog.content = markdown2.markdown(blog.content,extras=["code-friendly","fenced-code-blocks"])
     return dict(blogs=blogs, page=page)
     
 @api
